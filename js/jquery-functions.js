@@ -108,74 +108,60 @@ $(document).ready(function () {
   function submitForm() {
     const resultWrapper = document.createElement("div");
     resultWrapper.setAttribute("id", "resultWrapper");
-    const evidenceList = document.createElement("ol");
-    evidenceList.setAttribute("id", "evidences");
 
-    var answers = [];
-    for (var i = 0; i < totalQuestions; i++) {
-      answers.push(sessionStorage.getItem("answer_" + i));
+    // Πάρε όλες τις απαντήσεις από sessionStorage
+    let allAnswers = [];
+    for (let i = 0; i < totalQuestions; i++) {
+        allAnswers.push(sessionStorage.getItem("answer_" + i)); // "Ναι" ή "Όχι"
     }
 
-    var resultType = determineResult(answers);
-    var titleText = "";
-    if (currentLanguage === "greek") {
-      if (resultType === "positive") titleText = "Θετική εισήγηση μεταγραφής";
-      else if (resultType === "negative") titleText = "Αρνητική εισήγηση μεταγραφής";
-      else if (resultType === "ministry") titleText = "Αποστολή αιτήματος προς Υπουργείο Παιδείας";
-      else titleText = "Δεν υπάρχει σαφές αποτέλεσμα";
+    // Ορισμός θετικών και αρνητικών ερωτήσεων
+    const positiveQuestions = [3, 5, 7, 9]; // σχέδιο θετικής, υπογραφές, πρωτοκόλληση θετικής
+    const negativeQuestions = [4, 6, 8, 10]; // σχέδιο αρνητικής, υπογραφές, πρωτοκόλληση αρνητικής
+    const ministryQuestion = 2; // Υπουργείο
+
+    // Έλεγχος κατάστασης
+    let isPositive = positiveQuestions.every(q => allAnswers[q] === "Ναι") &&
+                     negativeQuestions.every(q => allAnswers[q] === "Όχι");
+
+    let isNegative = negativeQuestions.every(q => allAnswers[q] === "Ναι") &&
+                     positiveQuestions.every(q => allAnswers[q] === "Όχι");
+
+    let isMinistry = allAnswers[ministryQuestion] === "Ναι";
+
+    let finalResult = "";
+
+    if (isPositive) {
+        finalResult = currentLanguage === "greek"
+            ? "Θετική εισήγηση μεταγραφής"
+            : "Positive transcription recommendation";
+    } else if (isNegative) {
+        finalResult = currentLanguage === "greek"
+            ? "Αρνητική εισήγηση μεταγραφής"
+            : "Negative transcription recommendation";
+    } else if (isMinistry) {
+        finalResult = currentLanguage === "greek"
+            ? "Αποστολή αιτήματος προς Υπουργείο Παιδείας"
+            : "Submission to Ministry of Education";
     } else {
-      if (resultType === "positive") titleText = "Positive recommendation";
-      else if (resultType === "negative") titleText = "Negative recommendation";
-      else if (resultType === "ministry") titleText = "Request to Ministry of Education";
-      else titleText = "No clear outcome";
+        finalResult = currentLanguage === "greek"
+            ? "Δεν υπάρχει σαφές αποτέλεσμα (ανάμικτες απαντήσεις)"
+            : "No clear result (mixed answers)";
     }
 
-    resultWrapper.innerHTML = `<h1 class='answer'>${titleText}</h1>`;
+    // Εμφάνιση αποτελέσματος
+    const titleText = currentLanguage === "greek" ? "Η διαδικασία ολοκληρώθηκε!" : "The process is completed!";
+    resultWrapper.innerHTML = `<h1 class='answer'>${titleText}</h1>
+                               <h3 class='answer'>${finalResult}</h3>`;
     $(".question-container").html(resultWrapper);
 
-    $(".question-container").append(evidenceList);
-    if (resultType === "positive") getEvidencesById(9); // θετικά δικαιολογητικά
-    else if (resultType === "negative") getEvidencesById(10); // αρνητικά δικαιολογητικά
-    else if (resultType === "ministry") getEvidencesById(3); // προς Υπουργείο
+    // Προσθήκη λίστας δικαιολογητικών (προαιρετικό)
+    const evidenceListElement = document.createElement("ol");
+    evidenceListElement.setAttribute("id", "evidences");
+    $(".question-container").append(evidenceListElement);
+
+    // Φόρτωσε τα δικαιολογητικά για όλες τις απαντήσεις
+    retrieveAnswers();
 
     hideFormBtns();
-  }
-
-  $("#nextQuestion").click(function () {
-    if ($(".govgr-radios__input").is(":checked")) {
-      var selected = $('input[name="question-option"]:checked').val();
-      userAnswers[currentQuestion] = selected;
-      sessionStorage.setItem("answer_" + currentQuestion, selected);
-      if (currentQuestion + 1 === totalQuestions) submitForm();
-      else {
-        currentQuestion++;
-        loadQuestion(currentQuestion, true);
-        if (currentQuestion + 1 === totalQuestions) $(this).text("Υποβολή");
-      }
-    } else loadQuestion(currentQuestion, false);
-  });
-
-  $("#backButton").click(function () {
-    if (currentQuestion > 0) {
-      currentQuestion--;
-      loadQuestion(currentQuestion, true);
-      var answer = userAnswers[currentQuestion];
-      if (answer) $('input[name="question-option"][value="' + answer + '"]').prop("checked", true);
-    }
-  });
-
-  $("#startBtn").click(function () {
-    $("#intro").html("");
-    $("#languageBtn").hide();
-    $("#questions-btns").show();
-  });
-
-  $("#languageBtn").click(function () {
-    currentLanguage = currentLanguage === "greek" ? "english" : "greek";
-    if (currentQuestion >= 0 && currentQuestion < totalQuestions) loadQuestion(currentQuestion, true);
-  });
-
-  $("#questions-btns").hide();
-
-  getQuestions().then(() => getEvidences().then(() => getFaq().then(() => loadQuestion(currentQuestion, true))));
-});
+}
