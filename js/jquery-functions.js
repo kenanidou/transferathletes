@@ -113,14 +113,14 @@ $("document").ready(function () {
   }
 
   function determineResult() {
-    // Συνδυάζουμε όλες τις απαντήσεις για να καθορίσουμε το αποτέλεσμα
+    
     const answers = [];
     for (let i = 0; i < totalQuestions; i++) {
       answers.push(userAnswers[i]);
     }
 
-    let positiveSteps = [3, 5, 7, 9]; // ερωτήσεις θετικής διαδικασίας
-    let negativeSteps = [4, 6, 8, 10]; // ερωτήσεις αρνητικής διαδικασίας
+    let positiveSteps = [3, 5, 7, 9]; 
+    let negativeSteps = [4, 6, 8, 10]; 
 
     let positiveYes = positiveSteps.every((i) => answers[i] === "Ναι");
     let negativeYes = negativeSteps.every((i) => answers[i] === "Ναι");
@@ -211,3 +211,4 @@ $("document").ready(function () {
     });
   });
 });
+
