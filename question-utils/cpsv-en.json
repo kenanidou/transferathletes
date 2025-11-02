@@ -1,0 +1,73 @@
+{
+  "PublicService": {
+    "name": "Identity, Verification, and Signature Means",
+   "evidence": [
+      {
+        "id": 1,
+        "evs": [
+          {
+            "id": "ev0001",
+            "type": "Evidence",
+            "name":  "Certificate of Studies from the Admission Department",
+            "description": "Certificate from the admission department confirming the student's enrollment."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "evs": [
+          {
+            "id": "ev0002",
+            "type": "Evidence",
+            "name": "Certificate that the department does not grant the sport specialty"
+            ,
+            "description": "Certificate from the admission department stating that the sport specialty is not granted."
+            
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "evs": [
+          {
+            "id": "ev0003",
+            "type": "Evidence",
+            "name": "Certificate from the relevant sports club"
+            ,
+            "description": "Certificate from the nearest sports club regarding the athlete's activity."
+            
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "evs": [
+          {
+            "id": "ev0004",
+            "type": "Evidence",
+            "name": "Certificate of Outstanding Athletic Achievement",
+            "description": "Certificate from the relevant sports federation for the athlete's outstanding achievement."
+          }
+        ]
+      }
+    ],
+    "criterion_requirments": [
+      {
+        "id": "cr0001",
+        "name": "The school or department does not grant the sport specialty"  
+      },
+      {
+        "id": "cr0002",
+        "name": "The school is geographically distant from the athlete's training location"
+      },
+      {
+        "id": "cr0003",
+        "name": "The athlete has achieved outstanding distinction in Olympics or World/European Championships"
+      },
+      {
+        "id": "cr0004",
+        "name": "The athlete is active without interruption in his sporting activity"
+      }
+    ]
+  }
+}

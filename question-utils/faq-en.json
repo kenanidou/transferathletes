@@ -1,0 +1,17 @@
+[
+    {
+        "id": 0,
+        "question": "What documents are required?",
+        "answer": "Application, sports certificate, enrollment certificate, ID."
+    },
+    {
+        "id": 1,
+        "question": "Can it be done online?",
+        "answer": "If all documents are digital, yes. Otherwise physical presence."
+    },
+    {
+        "id": 2,
+        "question": "How long does the procedure take?",
+        "answer": "Approximately 5–20 working days."
+    }
+]

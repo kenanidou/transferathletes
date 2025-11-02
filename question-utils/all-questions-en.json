@@ -1,0 +1,57 @@
+[
+    {
+        "id": 0,
+        "question": "Application received with attachments?",
+        "options": ["Yes", "No"]
+    },
+    {
+        "id": 1,
+        "question": "Has the application check been completed?",
+        "options": ["Yes", "No"]
+    },
+    {
+        "id": 2,
+        "question": "Is a document to the Ministry required?",
+        "options": ["Yes", "No"]
+    },
+    {
+        "id": 3,
+        "question": "Was a draft positive response prepared?",
+        "options": ["Yes", "No"]
+    },
+    {
+        "id": 4,
+        "question": "Was a draft negative response prepared?",
+        "options": ["Yes", "No"]
+    },
+    {
+        "id": 5,
+        "question": "Did the Director countersign the positive draft?",
+        "options": ["Yes", "No"]
+    },
+    {
+        "id": 6,
+        "question": "Did the Director countersign the negative draft?",
+        "options": ["Yes", "No"]
+    },
+    {
+        "id": 7,
+        "question": "Did the General Director sign the positive draft?",
+        "options": ["Yes", "No"]
+    },
+    {
+        "id": 8,
+        "question": "Did the General Director sign the negative draft?",
+        "options": ["Yes", "No"]
+    },
+    {
+        "id": 9,
+        "question": "Protocol positive draft for completion?",
+        "options": ["Yes", "No"]
+    },
+    {
+        "id": 10,
+        "question": "Protocol negative draft for completion?",
+        "options": ["Yes", "No"]
+    }
+]
