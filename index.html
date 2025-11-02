@@ -177,4 +177,61 @@
     });
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Τα δεδομένα των FAQ
+    const faqs = [
+        {
+            "id": 0,
+            "question": "Τι δικαιολογητικά χρειάζονται;",
+            "answer": "Αίτηση, αθλητικό πιστοποιητικό, βεβαίωση σπουδών, ταυτότητα."
+        },
+        {
+            "id": 1,
+            "question": "Μπορεί να γίνει ηλεκτρονικά;",
+            "answer": "Εάν όλα τα έγγραφα είναι σε ψηφιακή μορφή, ναι. Διαφορετικά φυσική παρουσία."
+        },
+        {
+            "id": 2,
+            "question": "Πόσος χρόνος διαρκεί η διαδικασία;",
+            "answer": "Ενδεικτικά 5–20 εργάσιμες ημέρες."
+        }
+    ];
+
+    const faqContainer = document.getElementById("faqContainer");
+
+    // Δημιουργία τίτλου για FAQ
+    const faqTitle = document.createElement("h2");
+    faqTitle.textContent = "Συχνές Ερωτήσεις";
+    faqTitle.className = "govgr-heading-m";
+    faqContainer.appendChild(faqTitle);
+
+    // Δημιουργία κάθε FAQ
+    faqs.forEach(faq => {
+        const details = document.createElement("details");
+        details.className = "govgr-accordion__section";
+
+        const summary = document.createElement("summary");
+        summary.className = "govgr-accordion__section-summary";
+        summary.textContent = faq.question;
+        details.appendChild(summary);
+
+        const content = document.createElement("div");
+        content.className = "govgr-accordion__section-content";
+        const p = document.createElement("p");
+        p.className = "govgr-body";
+        p.textContent = faq.answer;
+        content.appendChild(p);
+
+        details.appendChild(content);
+        faqContainer.appendChild(details);
+    });
+
+    // Εμφάνιση του FAQ container
+    faqContainer.style.display = "block";
+});
+</script>
+
+
 </html>
+
