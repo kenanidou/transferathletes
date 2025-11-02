@@ -1,14 +1,11 @@
-$(document).ready(function () {
+$("document").ready(function () {
   var currentQuestion = 0;
   var totalQuestions = 0;
   var userAnswers = {};
   var all_questions;
-  var all_questions_en;
   var all_evidences;
-  var all_evidences_en;
   var faq;
-  var faq_en;
-  var currentLanguage = "greek";
+  var currentLanguage = "greek"; // Αρχική γλώσσα
 
   function hideFormBtns() {
     $("#nextQuestion").hide();
@@ -17,142 +14,162 @@ $(document).ready(function () {
 
   function getQuestions() {
     return fetch("question-utils/all-questions.json")
-      .then((res) => res.json())
+      .then((response) => response.json())
       .then((data) => {
         all_questions = data;
         totalQuestions = data.length;
-        return fetch("question-utils/all-questions-en.json");
       })
-      .then((res) => res.json())
-      .then((dataEn) => {
-        all_questions_en = dataEn;
-      })
-      .catch((err) => {
-        console.error(err);
-        $(".question-container").html("Failed to fetch questions.");
+      .catch((error) => {
+        console.error("Failed to fetch all-questions:", error);
+        $(".question-container").html("Error: Failed to fetch all-questions.json.");
         hideFormBtns();
       });
   }
 
   function getEvidences() {
     return fetch("question-utils/cpsv.json")
-      .then((res) => res.json())
+      .then((response) => response.json())
       .then((data) => {
         all_evidences = data;
-        return fetch("question-utils/cpsv-en.json");
       })
-      .then((res) => res.json())
-      .then((dataEn) => {
-        all_evidences_en = dataEn;
-      })
-      .catch((err) => {
-        console.error(err);
-        $(".question-container").html("Failed to fetch evidences.");
+      .catch((error) => {
+        console.error("Failed to fetch cpsv:", error);
+        $(".question-container").html("Error: Failed to fetch cpsv.json.");
         hideFormBtns();
       });
   }
 
   function getFaq() {
     return fetch("question-utils/faq.json")
-      .then((res) => res.json())
+      .then((response) => response.json())
       .then((data) => {
         faq = data;
-        return fetch("question-utils/faq-en.json");
       })
-      .then((res) => res.json())
-      .then((dataEn) => {
-        faq_en = dataEn;
-      })
-      .catch((err) => {
-        console.error(err);
+      .catch((error) => {
+        console.error("Failed to fetch faq:", error);
+        $(".question-container").html("Error: Failed to fetch faq.json.");
       });
   }
 
   function getEvidencesById(id) {
-    var selectedEvidence = currentLanguage === "greek" ? all_evidences : all_evidences_en;
-    selectedEvidence = selectedEvidence.PublicService.evidence.find((e) => e.id === id);
+    var selectedEvidence = all_evidences.PublicService.evidence.find(
+      (evidence) => evidence.id === id
+    );
+
     if (selectedEvidence) {
-      const el = document.getElementById("evidences");
-      selectedEvidence.evs.forEach((ev) => {
-        const li = document.createElement("li");
-        li.textContent = ev.name;
-        el.appendChild(li);
+      const evidenceListElement = document.getElementById("evidences");
+      selectedEvidence.evs.forEach((evsItem) => {
+        const listItem = document.createElement("li");
+        listItem.textContent = evsItem.name;
+        evidenceListElement.appendChild(listItem);
       });
+    } else {
+      console.log(`Evidence with ID '${id}' not found.`);
     }
   }
 
-  function loadQuestion(qId, noError) {
+  function setResult(text) {
+    const resultWrapper = document.getElementById("resultWrapper");
+    const result = document.createElement("h5");
+    result.textContent = text;
+    resultWrapper.appendChild(result);
+  }
+
+  function loadQuestion(questionId, noError) {
     $("#nextQuestion").show();
     if (currentQuestion > 0) $("#backButton").show();
-    var question = currentLanguage === "greek" ? all_questions[qId] : all_questions_en[qId];
-    var qElem = document.createElement("div");
+
+    var question = all_questions[questionId];
+    var questionElement = document.createElement("div");
+
     if (noError) {
-      qElem.innerHTML = `<div class='govgr-field'><fieldset class='govgr-fieldset'><legend class='govgr-fieldset__legend govgr-heading-l'>${question.question}</legend><div class='govgr-radios' id='radios-${qId}'>${question.options.map(opt => `<div class='govgr-radios__item'><label class='govgr-label govgr-radios__label'>${opt}<input class='govgr-radios__input' type='radio' name='question-option' value='${opt}' /></label></div>`).join('')}</div></fieldset></div>`;
+      questionElement.innerHTML = `
+        <div class='govgr-field'>
+          <fieldset class='govgr-fieldset'>
+            <legend class='govgr-fieldset__legend govgr-heading-l'>
+              ${question.question}
+            </legend>
+            <div class='govgr-radios' id='radios-${questionId}'>
+              ${question.options
+                .map(
+                  (option) => `
+                    <div class='govgr-radios__item'>
+                      <label class='govgr-label govgr-radios__label'>
+                        ${option}
+                        <input class='govgr-radios__input' type='radio' name='question-option' value='${option}' />
+                      </label>
+                    </div>
+                  `
+                )
+                .join("")}
+            </div>
+          </fieldset>
+        </div>`;
     } else {
-      qElem.innerHTML = `<div class='govgr-field govgr-field__error'><legend class='govgr-fieldset__legend govgr-heading-l'>${question.question}</legend><p class='govgr-error-message'>Πρέπει να επιλέξετε μια απάντηση</p><div class='govgr-radios' id='radios-${qId}'>${question.options.map(opt => `<div class='govgr-radios__item'><label class='govgr-label govgr-radios__label'>${opt}<input class='govgr-radios__input' type='radio' name='question-option' value='${opt}' /></label></div>`).join('')}</div></div>`;
+      questionElement.innerHTML = `
+        <div class='govgr-field govgr-field__error'>
+          <legend class='govgr-fieldset__legend govgr-heading-l'>${question.question}</legend>
+          <p class='govgr-error-message'>Πρέπει να επιλέξετε μια απάντηση</p>
+          <div class='govgr-radios' id='radios-${questionId}'>
+            ${question.options
+              .map(
+                (option) => `
+                <div class='govgr-radios__item'>
+                  <label class='govgr-label govgr-radios__label'>
+                    ${option}
+                    <input class='govgr-radios__input' type='radio' name='question-option' value='${option}' />
+                  </label>
+                </div>
+              `
+              )
+              .join("")}
+          </div>
+        </div>`;
     }
-    $(".question-container").html(qElem);
+
+    $(".question-container").html(questionElement);
   }
 
-  function determineResult(answers) {
-    var positive = answers[3] === "Ναι" && answers[4] === "Όχι" && answers[5] === "Ναι" && answers[6] === "Όχι" && answers[7] === "Ναι" && answers[8] === "Όχι" && answers[9] === "Ναι" && answers[10] === "Όχι";
-    var negative = answers[4] === "Ναι" && answers[3] === "Όχι"&& answers[5] === "Όχι" && answers[6] === "Ναι" && answers[7] === "Όχι" && answers[8] === "Ναι" && answers[9] === "Όχι" && answers[10] === "Ναι";
-    var sendMinistry = answers[2] === "Ναι";
-
-    if (positive && !negative && !sendMinistry) return "positive";
-    else if (!positive && negative && !sendMinistry) return "negative";
-    else if (sendMinistry) return "ministry";
-    else return "mixed";
+  function retrieveAnswers() {
+    getEvidencesById(1);
+    getEvidencesById(2);
+    getEvidencesById(3);
+    getEvidencesById(4);
   }
 
   function submitForm() {
     const resultWrapper = document.createElement("div");
     resultWrapper.setAttribute("id", "resultWrapper");
-    const evidenceList = document.createElement("ol");
-    evidenceList.setAttribute("id", "evidences");
-
-    var answers = [];
-    for (var i = 0; i < totalQuestions; i++) {
-      answers.push(sessionStorage.getItem("answer_" + i));
-    }
-
-    var resultType = determineResult(answers);
-    var titleText = "";
-    if (currentLanguage === "greek") {
-      if (resultType === "positive") titleText = "Θετική εισήγηση μεταγραφής";
-      else if (resultType === "negative") titleText = "Αρνητική εισήγηση μεταγραφής";
-      else if (resultType === "ministry") titleText = "Αποστολή αιτήματος προς Υπουργείο Παιδείας";
-      else titleText = "Δεν υπάρχει σαφές αποτέλεσμα";
-    } else {
-      if (resultType === "positive") titleText = "Positive recommendation";
-      else if (resultType === "negative") titleText = "Negative recommendation";
-      else if (resultType === "ministry") titleText = "Request to Ministry of Education";
-      else titleText = "No clear outcome";
-    }
-
-    resultWrapper.innerHTML = `<h1 class='answer'>${titleText}</h1>`;
+    resultWrapper.innerHTML = `<h1 class='answer'>Η διαδικασία ολοκληρώθηκε!</h1>`;
     $(".question-container").html(resultWrapper);
 
-    $(".question-container").append(evidenceList);
-    if (resultType === "positive") getEvidencesById(9); // θετικά δικαιολογητικά
-    else if (resultType === "negative") getEvidencesById(10); // αρνητικά δικαιολογητικά
-    else if (resultType === "ministry") getEvidencesById(3); // προς Υπουργείο
+    const evidenceListElement = document.createElement("ol");
+    evidenceListElement.setAttribute("id", "evidences");
+    $(".question-container").append(
+      "<br /><h5 class='answer'>Τα δικαιολογητικά που πρέπει να προσκομίσετε είναι:</h5><br />"
+    );
+    $(".question-container").append(evidenceListElement);
 
+    retrieveAnswers();
     hideFormBtns();
   }
 
   $("#nextQuestion").click(function () {
     if ($(".govgr-radios__input").is(":checked")) {
-      var selected = $('input[name="question-option"]:checked').val();
-      userAnswers[currentQuestion] = selected;
-      sessionStorage.setItem("answer_" + currentQuestion, selected);
-      if (currentQuestion + 1 === totalQuestions) submitForm();
-      else {
+      var selectedOption = $('input[name="question-option"]:checked').val();
+      userAnswers[currentQuestion] = selectedOption;
+      sessionStorage.setItem("answer_" + currentQuestion, selectedOption);
+
+      if (currentQuestion + 1 === totalQuestions) {
+        submitForm();
+      } else {
         currentQuestion++;
         loadQuestion(currentQuestion, true);
-        if (currentQuestion + 1 === totalQuestions) $(this).text("Υποβολή");
+        if (currentQuestion + 1 === totalQuestions) $("#nextQuestion").text("Υποβολή");
       }
-    } else loadQuestion(currentQuestion, false);
+    } else {
+      loadQuestion(currentQuestion, false);
+    }
   });
 
   $("#backButton").click(function () {
@@ -177,5 +194,11 @@ $(document).ready(function () {
 
   $("#questions-btns").hide();
 
-  getQuestions().then(() => getEvidences().then(() => getFaq().then(() => loadQuestion(currentQuestion, true))));
+  getQuestions().then(() => {
+    getEvidences().then(() => {
+      getFaq().then(() => {
+        loadQuestion(currentQuestion, true);
+      });
+    });
+  });
 });
