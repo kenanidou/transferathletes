@@ -4,7 +4,7 @@ $("document").ready(function () {
   var userAnswers = {};
   var all_questions;
   var all_evidences;
-  var currentLanguage = "greek"; // Αρχική γλώσσα
+  var currentLanguage = "greek"; 
 
   function hideFormBtns() {
     $("#nextQuestion").hide();
@@ -211,4 +211,5 @@ $("document").ready(function () {
     });
   });
 });
+
 
